@@ -54,7 +54,7 @@
 - (id)valueForUndefinedKey:(NSString *)key {
     if ([key isEqualToString:@"com_apple_ispendBalance"]) {
         // For items which do not have the "com_apple_ispendBalance" attribute, we need to return something. This gives a result in that case.
-        return [NSNumber numberWithDouble:0];
+        return @0.0;
     }
     return nil;
 }
@@ -63,13 +63,13 @@
 
 @implementation SearchController
 
-- (id)init {
+- (instancetype)init {
     if (self = [super init]) {
         _query = [[NSMetadataQuery alloc] init];
         // We want the items in the query to automatically be sorted by the file system name; this way, we don't have to do any special sorting. 
         NSSortDescriptor *sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:(id)kMDItemFSName ascending:YES] autorelease];
-        NSArray *descriptors = [NSArray arrayWithObject:sortDescriptor];
-        [_query setSortDescriptors:descriptors];
+        NSArray *descriptors = @[sortDescriptor];
+        _query.sortDescriptors = descriptors;
     }
     return self;
 }
@@ -81,14 +81,14 @@
 }
 
 - (IBAction)setSearchAllDocuments:(id)sender {
-    [_allDocumentsMenuItem setState:1];
-    [_iSpendDocumentsMenuItem setState:0];
+    _allDocumentsMenuItem.state = 1;
+    _iSpendDocumentsMenuItem.state = 0;
     [self createSearchPredicate];
 }
 
 - (IBAction)setSearchISpendDocuments:(id)sender{
-    [_allDocumentsMenuItem setState:0];
-    [_iSpendDocumentsMenuItem setState:1];    
+    _allDocumentsMenuItem.state = 0;
+    _iSpendDocumentsMenuItem.state = 1;    
     [self createSearchPredicate];
 }
 
@@ -132,20 +132,20 @@
                                     options:options];
     
     // Combine the two predicates with an OR
-    predicateToRun = [NSCompoundPredicate orPredicateWithSubpredicates:[NSArray arrayWithObjects:compPred, predicateToRun, nil]];
+    predicateToRun = [NSCompoundPredicate orPredicateWithSubpredicates:@[compPred, predicateToRun]];
     
     // Now, we don't want to include email messages in the result set, so add in an AND that excludes them
     NSPredicate *emailExclusionPredicate = [NSPredicate predicateWithFormat:@"(kMDItemContentType != 'com.apple.mail.emlx') && (kMDItemContentType != 'public.vcard')"];
-    predicateToRun = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:predicateToRun, emailExclusionPredicate, nil]];
+    predicateToRun = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicateToRun, emailExclusionPredicate]];
     
     // If we are only searching for our types, be sure to specify that using an AND
-    if ([_iSpendDocumentsMenuItem state] == 1) {
+    if (_iSpendDocumentsMenuItem.state == 1) {
         NSPredicate *ourTypesPredicate = [NSPredicate predicateWithFormat:@"kMDItemContentType == 'com.apple.ispend.document'"];
-        predicateToRun = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:predicateToRun, ourTypesPredicate, nil]];
+        predicateToRun = [NSCompoundPredicate andPredicateWithSubpredicates:@[predicateToRun, ourTypesPredicate]];
     }
     
     // Set it to the query. If the query already is alive, it will update immediately
-    [_query setPredicate:predicateToRun];           
+    _query.predicate = predicateToRun;           
     
     // In case the query hasn't yet started, start it.
     [_query startQuery]; 

@@ -59,19 +59,19 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 
 @implementation MyDocument
 
-- (id)init
+- (instancetype)init
 {
     static BOOL registeredServices = NO;
     self = [super init];
     if (self) {
         // initialize categories and accountTypes with some predefined strings
-        [self setCategories:[NSArray arrayWithObjects:@"Meals", @"Utilities", @"Mortgage", @"Gas", @"Insurance", nil]];
-        [self setAccountTypes:[NSArray arrayWithObjects:@"Checking", @"Savings", @"Credit Card", @"Brokerage", @"Mutual Fund", @"Money Market", nil]];
+        [self setCategories:@[@"Meals", @"Utilities", @"Mortgage", @"Gas", @"Insurance"]];
+        [self setAccountTypes:@[@"Checking", @"Savings", @"Credit Card", @"Brokerage", @"Mutual Fund", @"Money Market"]];
         // we need to know when any transaction is added or removed so we can observe any changes to any amounts, again to keep the  balance up to date
         [self addObserver:self forKeyPath:@"transactions" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:SpndTransactionsContext];
         if (!registeredServices) {
             // register as service provider
-            [NSApp setServicesProvider:[self class]];
+            NSApp.servicesProvider = [self class];
             // register as service consumer
             [NSApp registerServicesMenuSendTypes:[self writablePasteboardTypes] returnTypes:[self readablePasteboardTypes]];
             registeredServices = YES;
@@ -96,7 +96,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     // the searchField needs to be explicitly retained because it may be moved in and out of view hierarchies during toolbar customization.
     [searchFieldOutlet retain];
     // Set up the toolbar after the document nib has been loaded 
-    [self setupToolbarForWindow:[windowController window]];
+    [self setupToolbarForWindow:windowController.window];
 }
 
 // balance accessors
@@ -112,7 +112,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 }
 
 - (void)setOpeningBalance:(double)balance {
-    [[[self undoManager] prepareWithInvocationTarget:self] setOpeningBalance:_openingBalance];
+    [[self.undoManager prepareWithInvocationTarget:self] setOpeningBalance:_openingBalance];
     _openingBalance = balance;
 }
 
@@ -127,17 +127,17 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     // we'll be notified whenever there is a change to transactions, whether the array is replaced or an object is added or removed, because of the observing we set up in -init
     if (context == SpndTransactionsContext) {
         // set oldTransactions to the array of transactions that have been removed
-        NSArray *oldTransactions = [change objectForKey:NSKeyValueChangeOldKey];
-        if ([oldTransactions count] > 0) {
+        NSArray *oldTransactions = change[NSKeyValueChangeOldKey];
+        if (oldTransactions.count > 0) {
             // this change can be undone by adding oldTransactions back into the arrayController
-            [[[self undoManager] prepareWithInvocationTarget:self] insertTransactions:oldTransactions atIndexes:[change objectForKey:NSKeyValueChangeIndexesKey]];
+            [[self.undoManager prepareWithInvocationTarget:self] insertTransactions:oldTransactions atIndexes:change[NSKeyValueChangeIndexesKey]];
             [self stopObservingTransactions:oldTransactions];
         }
         // set newTransactions to the array of transactions that have been added
-        NSArray *newTransactions = [change objectForKey:NSKeyValueChangeNewKey];
-        if ([newTransactions count] > 0) {
+        NSArray *newTransactions = change[NSKeyValueChangeNewKey];
+        if (newTransactions.count > 0) {
             // this change can be undone by removing newTransactions from the arrayController
-            [[self undoManager]  registerUndoWithTarget:self selector:@selector(removeTransactionsAtIndexes:) object:[change objectForKey:NSKeyValueChangeIndexesKey]];
+            [self.undoManager  registerUndoWithTarget:self selector:@selector(removeTransactionsAtIndexes:) object:change[NSKeyValueChangeIndexesKey]];
             // set the document in each transaction so that the transaction can find our undoManager
             [newTransactions makeObjectsPerformSelector:@selector(setDocument:) withObject:self];
             [self startObservingTransactions:newTransactions];
@@ -179,7 +179,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 }
 
 - (void)startObservingTransactions:(NSArray *)newTransactions {
-    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [newTransactions count])];
+    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newTransactions.count)];
     // start observing "amount" in transactions that have been added so we can know when any amount changes
     // define a context so we can recognize the notification
     [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"amount" options:0 context:SpndAmountContext];
@@ -190,7 +190,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 }
 
 - (void)stopObservingTransactions:(NSArray *)oldTransactions {
-    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [oldTransactions count])];
+    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, oldTransactions.count)];
     // stop observing "amount" in transactions that have been removed
     [oldTransactions removeObserver:self fromObjectsAtIndexes:allIndexes forKeyPath:@"amount"];
     // stop observing "type"
@@ -266,16 +266,16 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         NSData *data;
         NSMutableDictionary *doc = [NSMutableDictionary dictionary];
         NSString *errorString;
-        [doc setObject:[NSNumber numberWithDouble:_openingBalance] forKey:kOpeningBalance];
-        [doc setObject:[NSKeyedArchiver archivedDataWithRootObject:_transactions] forKey:kTransactions];
-        [doc setObject:[NSKeyedArchiver archivedDataWithRootObject:_categories] forKey:kCategories];
-        [doc setObject:[NSKeyedArchiver archivedDataWithRootObject:_accountTypes] forKey:kAccountTypes];
+        doc[kOpeningBalance] = @(_openingBalance);
+        doc[kTransactions] = [NSKeyedArchiver archivedDataWithRootObject:_transactions];
+        doc[kCategories] = [NSKeyedArchiver archivedDataWithRootObject:_categories];
+        doc[kAccountTypes] = [NSKeyedArchiver archivedDataWithRootObject:_accountTypes];
         data = [NSPropertyListSerialization dataFromPropertyList:doc format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
         if (!data) {
             if (!outError) {
                 NSLog(@"dataFromPropertyList failed with %@", errorString);
             } else {
-                NSDictionary *errorUserInfo = [NSDictionary dictionaryWithObjectsAndKeys:@"iSpend document couldn't be written", NSLocalizedDescriptionKey, (errorString ? errorString : @"An unknown error occured."), NSLocalizedFailureReasonErrorKey, nil];
+                NSDictionary *errorUserInfo = @{NSLocalizedDescriptionKey: @"iSpend document couldn't be written", NSLocalizedFailureReasonErrorKey: (errorString ? errorString : @"An unknown error occured.")};
 
                 // In this simple example we know that no one's going to be paying attention to the domain and code that we use here.
                 *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:errorUserInfo];
@@ -285,7 +285,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         }
         return data;
     } else {
-        if (outError) *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unsupported data type: %@", typeName] forKey:NSLocalizedFailureReasonErrorKey]];
+        if (outError) *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"Unsupported data type: %@", typeName]}];
     }
     return nil;
 }
@@ -300,16 +300,16 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     NSDictionary *documentDictionary = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListImmutable format:NULL errorDescription:&errorString];
 
     if (documentDictionary) {                                           
-        [self setOpeningBalance:[[documentDictionary objectForKey:kOpeningBalance] doubleValue]];
-        [self setTransactions:[NSKeyedUnarchiver unarchiveObjectWithData:[documentDictionary objectForKey:kTransactions]]];
-        [self setCategories:[NSKeyedUnarchiver unarchiveObjectWithData:[documentDictionary objectForKey:kCategories]]];
-        [self setAccountTypes:[NSKeyedUnarchiver unarchiveObjectWithData:[documentDictionary objectForKey:kAccountTypes]]];
+        [self setOpeningBalance:[documentDictionary[kOpeningBalance] doubleValue]];
+        [self setTransactions:[NSKeyedUnarchiver unarchiveObjectWithData:documentDictionary[kTransactions]]];
+        [self setCategories:[NSKeyedUnarchiver unarchiveObjectWithData:documentDictionary[kCategories]]];
+        [self setAccountTypes:[NSKeyedUnarchiver unarchiveObjectWithData:documentDictionary[kAccountTypes]]];
         result = YES;
     } else {
         if (!outError) {
             NSLog(@"propertyListFromData failed with %@", errorString);
         } else {
-            NSDictionary *errorUserInfo = [NSDictionary dictionaryWithObjectsAndKeys: @"iSpend document couldn't be read", NSLocalizedDescriptionKey, (errorString ? errorString : @"An unknown error occured."), NSLocalizedFailureReasonErrorKey, nil];
+            NSDictionary *errorUserInfo = @{NSLocalizedDescriptionKey: @"iSpend document couldn't be read", NSLocalizedFailureReasonErrorKey: (errorString ? errorString : @"An unknown error occured.")};
 
             *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:errorUserInfo];
         }
@@ -317,7 +317,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         result = NO;
     }
     // we don't want any of the operations involved in loading the new document to mark it as dirty, nor should they be undo-able, so clear the undo stack
-    [[self undoManager] removeAllActions];
+    [self.undoManager removeAllActions];
     return result;
 }
 

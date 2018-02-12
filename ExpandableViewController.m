@@ -51,7 +51,7 @@
 @implementation ExpandableViewController
 
 - (void) awakeFromNib {
-    NSView *contentView = [[_middleBoxView window] contentView];
+    NSView *contentView = _middleBoxView.window.contentView;
     // add the detail views.  Both are hidden at the start, via a setting in IB
     [contentView addSubview:_stockTransactionView];
     [contentView addSubview:_bankTransactionView];
@@ -74,7 +74,7 @@
 
 // updateView is invoked to change hide/show the detail view, or to change which detail view is shown
 - (void)updateView {
-    NSWindow *docWindow = [_middleBoxView window];
+    NSWindow *docWindow = _middleBoxView.window;
     NSView *newView;
     CGFloat windowDelta = 0;
     NSRect newViewFrame = NSZeroRect;
@@ -98,31 +98,31 @@
     // make sure any previous animation has stopped
     if (_animation) {
         // set progress to 1.0 so that animation will display its last frame (eg. to get correct window height)
-        [_animation setCurrentProgress:1.0f];
+        _animation.currentProgress = 1.0f;
         [_animation stopAnimation];
     }
 
     if (newView != nil) {
         // the window should grow by the size of the new view, in window coordinates
-        newViewFrame = [newView frame];
+        newViewFrame = newView.frame;
         windowDelta += [newView convertSize:newViewFrame.size toView:nil].height;
     }
     
     if (_currentView != nil) {
         // the window should shrink by the size of the current view, in window coordinates
-        currentViewFrame = [_currentView frame];
+        currentViewFrame = _currentView.frame;
         windowDelta -= [_currentView convertSize:currentViewFrame.size toView:nil].height;
     }
 
     // calculate new window frame
-    NSRect newWindowFrame = [docWindow frame];
+    NSRect newWindowFrame = docWindow.frame;
     // change the window height by the delta we computed above
     newWindowFrame.size.height += windowDelta;
     // keep the upper left of the window in the same place, by moving the lower left by the same delta
     newWindowFrame.origin.y -= windowDelta;
     if (windowDelta > 0) {
         // before we start resizing the window, make sure the new size will fit onscreen
-        NSRect constrainedWindowFrame = [docWindow constrainFrameRect:newWindowFrame toScreen:[docWindow screen]];
+        NSRect constrainedWindowFrame = [docWindow constrainFrameRect:newWindowFrame toScreen:docWindow.screen];
         if (!(NSEqualRects(constrainedWindowFrame, newWindowFrame))) {
             // adjust window frame so it can grow by windowDelta height 
             NSRect adjustedWindowFrame = constrainedWindowFrame;
@@ -134,8 +134,8 @@
     }
     
     // temporarily pin the existing views to the top of  the window, so that they don't resize or move during the window resize below
-    [_upperTableScrollView setAutoresizingMask:NSViewMinYMargin];
-    [_middleBoxView setAutoresizingMask:NSViewMinYMargin];
+    _upperTableScrollView.autoresizingMask = NSViewMinYMargin;
+    _middleBoxView.autoresizingMask = NSViewMinYMargin;
         
     // hide old view, if any
     if (_currentView != nil) {
@@ -146,16 +146,14 @@
             endFrame.origin.y = NSHeight(newViewFrame) - NSHeight(currentViewFrame);
             endFrame.size.height = NSHeight(currentViewFrame);
         }
-        NSDictionary *animateOutDict = [NSDictionary dictionaryWithObjectsAndKeys:
-            _currentView, NSViewAnimationTargetKey,
-            NSViewAnimationFadeOutEffect, NSViewAnimationEffectKey,
-            [NSValue valueWithRect:endFrame], NSViewAnimationEndFrameKey,
-            nil];
+        NSDictionary *animateOutDict = @{NSViewAnimationTargetKey: _currentView,
+            NSViewAnimationEffectKey: NSViewAnimationFadeOutEffect,
+            NSViewAnimationEndFrameKey: [NSValue valueWithRect:endFrame]};
         [viewAnimations addObject:animateOutDict];
     }
 
     // resize window
-    NSDictionary *windowSizeDict = [NSDictionary dictionaryWithObjectsAndKeys:docWindow, NSViewAnimationTargetKey, [NSValue valueWithRect:newWindowFrame], NSViewAnimationEndFrameKey, nil];
+    NSDictionary *windowSizeDict = @{NSViewAnimationTargetKey: docWindow, NSViewAnimationEndFrameKey: [NSValue valueWithRect:newWindowFrame]};
     [viewAnimations addObject:windowSizeDict];
     
     // show new view, if any
@@ -167,12 +165,10 @@
             startFrame.origin.y = NSHeight(currentViewFrame) - NSHeight(newViewFrame);
             startFrame.size.height = NSHeight(newViewFrame);
         }
-        NSDictionary *animateInDict = [NSDictionary dictionaryWithObjectsAndKeys:
-            newView, NSViewAnimationTargetKey, 
-            NSViewAnimationFadeInEffect, NSViewAnimationEffectKey, 
-            [NSValue valueWithRect:startFrame], NSViewAnimationStartFrameKey,
-            [NSValue valueWithRect:newViewFrame], NSViewAnimationEndFrameKey,
-            nil];
+        NSDictionary *animateInDict = @{NSViewAnimationTargetKey: newView, 
+            NSViewAnimationEffectKey: NSViewAnimationFadeInEffect, 
+            NSViewAnimationStartFrameKey: [NSValue valueWithRect:startFrame],
+            NSViewAnimationEndFrameKey: [NSValue valueWithRect:newViewFrame]};
         
         [viewAnimations addObject:animateInDict];
     }
@@ -180,7 +176,7 @@
     _currentView = newView;
     
     _animation = [[NSViewAnimation alloc] initWithViewAnimations:viewAnimations];
-    [_animation setDelegate:self];
+    _animation.delegate = self;
     [_animation startAnimation];
 }
 
@@ -197,9 +193,9 @@
     
     // restore the resizing masks on the scrollView and middleBoxView.  
     // the scrollView should resize when the window resizes - NSViewHeightSizable|NSViewWidthSizable
-    [_upperTableScrollView setAutoresizingMask:NSViewHeightSizable|NSViewWidthSizable];
+    _upperTableScrollView.autoresizingMask = NSViewHeightSizable|NSViewWidthSizable;
     // the middleBoxView should preserve its size and position relative to lower left - NSViewNotSizable
-    [_middleBoxView setAutoresizingMask:NSViewNotSizable];
+    _middleBoxView.autoresizingMask = NSViewNotSizable;
 }
 
 // key value observing

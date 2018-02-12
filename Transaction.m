@@ -49,14 +49,14 @@
 
 @implementation Transaction
 
-- (id)init {
+- (instancetype)init {
     if (self = [super init]) {
         self.date = [NSDate date];
     }
     return self;
 }
 
-- (id)initWithString:(NSString *)string {
+- (instancetype)initWithString:(NSString *)string {
     if(!(self = [super init])) return nil;
 
     NSArray *stringComponents;
@@ -66,26 +66,26 @@
     BOOL foundDate = NO, foundAmount = NO, foundDescription = NO, foundType = NO, foundAccountType = NO;
     NSCharacterSet *skipSet = [NSCharacterSet characterSetWithCharactersInString:@" \n\t,\""];
     stringComponents = [string componentsSeparatedByString:@"\n"];
-    if ([stringComponents count] < 3) stringComponents = [string componentsSeparatedByString:@"\t"];
-    if ([stringComponents count] < 3) stringComponents = [string componentsSeparatedByString:@","];
+    if (stringComponents.count < 3) stringComponents = [string componentsSeparatedByString:@"\t"];
+    if (stringComponents.count < 3) stringComponents = [string componentsSeparatedByString:@","];
     for (substring in stringComponents) {
         substring = [substring stringByTrimmingCharactersInSet:skipSet];
         scanner = [NSScanner scannerWithString:substring];
         [scanner scanFloat:&substringVal];
-	if (!foundDate && [substring rangeOfString:@"/"].length != 0) {
-	    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-	    [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-	    NSRange range = NSMakeRange(0,[substring length]);
+    if (!foundDate && [substring rangeOfString:@"/"].length != 0) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        NSRange range = NSMakeRange(0,substring.length);
             NSDate *readDate;
-	    NSError *error;
-	    [dateFormatter getObjectValue:&readDate forString:substring range:&range error:&error];
-	    [dateFormatter release];
-	    self.date = readDate;
-	    foundDate = YES;
-	} else if (!foundAmount && [scanner isAtEnd]) {
-	    self.amount = substringVal;
-	    foundAmount = YES;
-	} else if ([substring length] > 1) {
+        NSError *error;
+        [dateFormatter getObjectValue:&readDate forString:substring range:&range error:&error];
+        [dateFormatter release];
+        self.date = readDate;
+        foundDate = YES;
+    } else if (!foundAmount && scanner.atEnd) {
+        self.amount = substringVal;
+        foundAmount = YES;
+    } else if (substring.length > 1) {
             if (!foundDescription) {
                 self.descriptionString = substring;
                 foundDescription = YES;
@@ -162,7 +162,7 @@
     }
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder {
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self.date = [aDecoder decodeObjectForKey:kDate];
     self.amount = [aDecoder decodeDoubleForKey:kAmount];
     self.descriptionString = [aDecoder decodeObjectForKey:kDescription];
@@ -345,7 +345,7 @@
 }
 
 - (NSUndoManager *)undoManager {
-    return [self.document undoManager];
+    return (self.document).undoManager;
 }
 
 @end

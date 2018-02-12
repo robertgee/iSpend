@@ -50,7 +50,7 @@
 static NSString *iSpendDocToolbarIdentifier     = @"iSpend Document Toolbar Identifier";
 static NSString *AddItemToolbarItemIdentifier   = @"Add Item Identifier";
 static NSString *DeleteItemToolbarItemIdentifier = @"Delete Item Identifier";
-static NSString *SaveDocToolbarItemIdentifier 	= @"Save Document Item Identifier";
+static NSString *SaveDocToolbarItemIdentifier     = @"Save Document Item Identifier";
 static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
 
 @implementation MyDocument(Toolbar)
@@ -65,13 +65,13 @@ static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
     // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults 
     [toolbar setAllowsUserCustomization: YES];
     [toolbar setAutosavesConfiguration: YES];
-    [toolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
-	
+    toolbar.displayMode = NSToolbarDisplayModeIconAndLabel;
+    
     // We are the delegate
-    [toolbar setDelegate: self];
+    toolbar.delegate = self;
 
     // Attach the toolbar to the document window 
-    [theWindow setToolbar:toolbar];
+    theWindow.toolbar = toolbar;
 }
 
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL)willBeInserted {
@@ -81,54 +81,54 @@ static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
 
     if ([itemIdent isEqual:AddItemToolbarItemIdentifier]) {
         // Set the text label to be displayed in the toolbar and customization palette 
-        [toolbarItem setLabel:@"Add"];
-        [toolbarItem setPaletteLabel:@"Add"];
+        toolbarItem.label = @"Add";
+        toolbarItem.paletteLabel = @"Add";
         
         // Set up a reasonable tooltip, and image   Note, these aren't localized, but you will likely want to localize many of the item's properties 
-        [toolbarItem setToolTip:@"Add New Transaction"];
-        [toolbarItem setImage:[NSImage imageNamed: @"add"]];
+        toolbarItem.toolTip = @"Add New Transaction";
+        toolbarItem.image = [NSImage imageNamed: @"add"];
 
         // Tell the item what message to send when it is clicked 
-        [toolbarItem setTarget:self];
-        [toolbarItem setAction:@selector(add:)];
-		
+        toolbarItem.target = self;
+        toolbarItem.action = @selector(add:);
+        
     } else if ([itemIdent isEqual:DeleteItemToolbarItemIdentifier]) {
         // Set the text label to be displayed in the toolbar and customization palette 
-        [toolbarItem setLabel: @"Delete"];
-        [toolbarItem setPaletteLabel: @"Delete"];
+        toolbarItem.label = @"Delete";
+        toolbarItem.paletteLabel = @"Delete";
         
         // Set up a reasonable tooltip, and image   Note, these aren't localized, but you will likely want to localize many of the item's properties 
-        [toolbarItem setToolTip: @"Delete Transaction"];
-        [toolbarItem setImage: [NSImage imageNamed: @"delete"]];
+        toolbarItem.toolTip = @"Delete Transaction";
+        toolbarItem.image = [NSImage imageNamed: @"delete"];
         
         // Tell the item what message to send when it is clicked 
-        [toolbarItem setTarget:self];
-        [toolbarItem setAction:@selector(delete:)];
+        toolbarItem.target = self;
+        toolbarItem.action = @selector(delete:);
         
-    } else if ([itemIdent isEqual:SaveDocToolbarItemIdentifier]) {		
+    } else if ([itemIdent isEqual:SaveDocToolbarItemIdentifier]) {        
         // Set the text label to be displayed in the toolbar and customization palette 
-        [toolbarItem setLabel: @"Save"];
-        [toolbarItem setPaletteLabel: @"Save"];
+        toolbarItem.label = @"Save";
+        toolbarItem.paletteLabel = @"Save";
         
         // Set up a reasonable tooltip, and image   Note, these aren't localized, but you will likely want to localize many of the item's properties 
-        [toolbarItem setToolTip: @"Save Your Document"];
-        [toolbarItem setImage: [NSImage imageNamed: @"save"]];
+        toolbarItem.toolTip = @"Save Your Document";
+        toolbarItem.image = [NSImage imageNamed: @"save"];
         
         // Tell the item what message to send when it is clicked 
-        [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(saveDocument:)];
-		
+        toolbarItem.target = self;
+        toolbarItem.action = @selector(saveDocument:);
+        
     } else if([itemIdent isEqual: SearchToolbarItemIdentifier]) {
         // Set up the standard properties 
-        [toolbarItem setLabel: @"Search"];
-        [toolbarItem setPaletteLabel: @"Search"];
-        [toolbarItem setToolTip: @"Search Your Document"];
+        toolbarItem.label = @"Search";
+        toolbarItem.paletteLabel = @"Search";
+        toolbarItem.toolTip = @"Search Your Document";
         
         // Use a custom view, an NSSearchField, in the toolbar item
-        [toolbarItem setView: searchFieldOutlet];
+        toolbarItem.view = searchFieldOutlet;
         
-        [toolbarItem setMinSize:NSMakeSize(30, NSHeight([searchFieldOutlet frame]))];
-        [toolbarItem setMaxSize:NSMakeSize(400,NSHeight([searchFieldOutlet frame]))];
+        toolbarItem.minSize = NSMakeSize(30, NSHeight(searchFieldOutlet.frame));
+        toolbarItem.maxSize = NSMakeSize(400,NSHeight(searchFieldOutlet.frame));
         
     } else {
         // itemIdent refered to a toolbar item that is not provide or supported by us or cocoa 
@@ -140,34 +140,31 @@ static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)toolbar {
     /* Required method.  Returns the ordered list of items to be shown in the toolbar by default.   If during initialization, no overriding values are found in the user defaults, or if the user chooses to revert to the default items this set will be used. */
-    return [NSArray arrayWithObjects:
-            AddItemToolbarItemIdentifier, DeleteItemToolbarItemIdentifier,
+    return @[AddItemToolbarItemIdentifier, DeleteItemToolbarItemIdentifier,
             NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSeparatorItemIdentifier, 
-            SaveDocToolbarItemIdentifier, SearchToolbarItemIdentifier, nil];
+            SaveDocToolbarItemIdentifier, SearchToolbarItemIdentifier];
 }
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)toolbar {
     /* Required method.  Returns the list of all allowed items by identifier.  By default, the toolbar does not assume any items are allowed, even the separator.  So, every allowed item must be explicitly listed.  The set of allowed items is used to construct the customization palette.  The order of items does not necessarily guarantee the order of appearance in the palette.  At minimum, you should return the default item list.*/
-    return [NSArray arrayWithObjects:
-            AddItemToolbarItemIdentifier, DeleteItemToolbarItemIdentifier, SaveDocToolbarItemIdentifier,
+    return @[AddItemToolbarItemIdentifier, DeleteItemToolbarItemIdentifier, SaveDocToolbarItemIdentifier,
             NSToolbarFlexibleSpaceItemIdentifier, NSToolbarSpaceItemIdentifier, 
             NSToolbarSeparatorItemIdentifier, NSToolbarCustomizeToolbarItemIdentifier,
-            NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarPrintItemIdentifier, SearchToolbarItemIdentifier, 
-            nil];
+            NSToolbarShowFontsItemIdentifier, NSToolbarShowColorsItemIdentifier, NSToolbarPrintItemIdentifier, SearchToolbarItemIdentifier];
 }
 
 - (BOOL)validateToolbarItem:(NSToolbarItem *)toolbarItem {
     /* NSToolbarItemValidation extends the standard validation idea by introducing this new method which is sent to validators for each visible standard NSToolbarItem with a valid target/action pair.  Note: This message is sent from NSToolbarItem's validate method, howevever validate will not send this message for items that have custom views. */
     BOOL enable = NO;
-    if ([[toolbarItem itemIdentifier] isEqual:AddItemToolbarItemIdentifier]) {
+    if ([toolbarItem.itemIdentifier isEqual:AddItemToolbarItemIdentifier]) {
         enable = YES;
-    } else if ([[toolbarItem itemIdentifier] isEqual:DeleteItemToolbarItemIdentifier]) {
-        enable = ([[_transactionController selectedObjects] count] > 0);
-    } else if ([[toolbarItem itemIdentifier] isEqual:SaveDocToolbarItemIdentifier]) {
+    } else if ([toolbarItem.itemIdentifier isEqual:DeleteItemToolbarItemIdentifier]) {
+        enable = ([_transactionController selectedObjects].count > 0);
+    } else if ([toolbarItem.itemIdentifier isEqual:SaveDocToolbarItemIdentifier]) {
         enable = YES;
-    } else if ([[toolbarItem itemIdentifier] isEqual:SearchToolbarItemIdentifier]) {
+    } else if ([toolbarItem.itemIdentifier isEqual:SearchToolbarItemIdentifier]) {
         enable = YES;
-    }	
+    }    
     return enable;
 }
 

@@ -50,14 +50,14 @@
 @interface MyDocument(Pasteboard)
 
 /* Methods for writing to the pasteboard */
-- (NSArray *)writablePasteboardTypes;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *writablePasteboardTypes;
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
 - (NSURL *)writeSelectionToDestination:(NSURL *)destination;
 - (void)copy:(id)sender;
 
 /* Methods for reading from the pasteboard */
-- (NSArray *)readablePasteboardTypes;
+@property (NS_NONATOMIC_IOSONLY, readonly, copy) NSArray *readablePasteboardTypes;
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
 - (void)paste:(id)sender;

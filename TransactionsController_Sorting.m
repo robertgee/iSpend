@@ -66,13 +66,13 @@ static NSString *SortContext = @"TransactionsController.sort";
     // Note that we use pointer comparison for the context argument.  If this observation was set up by super, we can't be sure context will be an object, so we shouldn't use isEqual:. 
     if (context == TransactionsContext) {
         // observeValueForKeyPath:ofObject:change:context: is invoked with the context we specified above whenever an entry is added or removed from the transactions array
-        NSKeyValueChange changeKind = [[change objectForKey:NSKeyValueChangeKindKey] integerValue];
+        NSKeyValueChange changeKind = [change[NSKeyValueChangeKindKey] integerValue];
         if (changeKind != NSKeyValueChangeRemoval) {
             // schedule a call to rearrangeObjects at the end of this iteration through the runloop
             [self scheduleRearrangeObjects];
         }
         // in order to update sort order when a value is changed within a transaction, we also need to observe these key paths
-        [self updateObservationForOldTransactions:[change objectForKey:NSKeyValueChangeOldKey] newTransactions:[change objectForKey:NSKeyValueChangeNewKey]];
+        [self updateObservationForOldTransactions:change[NSKeyValueChangeOldKey] newTransactions:change[NSKeyValueChangeNewKey]];
     } 
     else if (context == SortContext) {
         // a key path for a sort descriptor has been changed in a transaction
@@ -99,37 +99,37 @@ static NSString *SortContext = @"TransactionsController.sort";
 
 - (void)setSortDescriptors:(NSArray *)sortDescriptors {
     // if the sort descriptors change, we need to update our observation of the key paths in the transactions
-    [self removeSortObserversForTransactions:[self arrangedObjects] sortDescriptors:[self sortDescriptors]];
-    [super setSortDescriptors:sortDescriptors];
-    [self addSortObserversForTransactions:[self arrangedObjects] sortDescriptors:[self sortDescriptors]];
+    [self removeSortObserversForTransactions:self.arrangedObjects sortDescriptors:self.sortDescriptors];
+    super.sortDescriptors = sortDescriptors;
+    [self addSortObserversForTransactions:self.arrangedObjects sortDescriptors:self.sortDescriptors];
 }
 
 - (void)updateObservationForOldTransactions:(NSArray *)oldTransactions newTransactions:(NSArray *)newTransactions {
-    if ([oldTransactions count] > 0) {
+    if (oldTransactions.count > 0) {
         // stop observing key paths for sort descriptors in transactions that have been removed
-        [self removeSortObserversForTransactions:oldTransactions sortDescriptors:[self sortDescriptors]];
+        [self removeSortObserversForTransactions:oldTransactions sortDescriptors:self.sortDescriptors];
     }
-    if ([newTransactions count] > 0) {
+    if (newTransactions.count > 0) {
         // stop observing key paths for sort descriptors in transactions that have been removed
-        [self addSortObserversForTransactions:newTransactions sortDescriptors:[self sortDescriptors]];
+        [self addSortObserversForTransactions:newTransactions sortDescriptors:self.sortDescriptors];
     }
 }
     
 - (void)addSortObserversForTransactions:(NSArray *)transactions sortDescriptors:(NSArray *)sortDescriptors {
     
     NSSortDescriptor *sortDescriptor;
-    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [transactions count])]; 
+    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, transactions.count)]; 
     for (sortDescriptor in sortDescriptors) {
-        [transactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:[sortDescriptor key] options:0 context:SortContext];
+        [transactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:sortDescriptor.key options:0 context:SortContext];
     }
 }
 
 - (void)removeSortObserversForTransactions:(NSArray *)transactions sortDescriptors:(NSArray *)sortDescriptors {
     
     NSSortDescriptor *sortDescriptor;
-    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [transactions count])]; 
+    NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, transactions.count)]; 
     for (sortDescriptor in sortDescriptors) {
-        [transactions removeObserver:self fromObjectsAtIndexes:allIndexes forKeyPath:[sortDescriptor key]];
+        [transactions removeObserver:self fromObjectsAtIndexes:allIndexes forKeyPath:sortDescriptor.key];
     }
 }
 
@@ -145,7 +145,7 @@ static NSString *SortContext = @"TransactionsController.sort";
     if (_observedKeyPath != nil) {
         [_document removeObserver:self forKeyPath:_observedKeyPath];
     }
-    [self removeSortObserversForTransactions:[self arrangedObjects] sortDescriptors:[self sortDescriptors]];
+    [self removeSortObserversForTransactions:self.arrangedObjects sortDescriptors:self.sortDescriptors];
     _document = nil;
     _observedKeyPath = nil;
     [super dealloc];

@@ -64,7 +64,7 @@
 - (BOOL)tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard {
     // This method will be called before the start of a drag out
     BOOL result = NO;
-    if (NSNotFound != [rowIndexes firstIndex]) {
+    if (NSNotFound != rowIndexes.firstIndex) {
         // We ask the document to write out the selected transactions plus a file promise to the pasteboard
         [self setSelectionIndexes:rowIndexes];
         result = [_document writeSelectionToPasteboard:pboard types:[_document writablePasteboardTypes]];
@@ -75,12 +75,12 @@
 - (NSArray *)tableView:(NSTableView *)tv namesOfPromisedFilesDroppedAtDestination:(NSURL *)dropDestination forDraggedRowsWithIndexes:(NSIndexSet *)rowIndexes {
     // This method will be called if we need to redeem our file promise
     NSURL *fileURL = nil;
-    if (dropDestination && NSNotFound != [rowIndexes firstIndex]) {
+    if (dropDestination && NSNotFound != rowIndexes.firstIndex) {
         // We ask the document to write out the selected transactions to a file in the specified directory
         [self setSelectionIndexes:rowIndexes];
         fileURL = [_document writeSelectionToDestination:dropDestination];
     }
-    return (fileURL ? [NSArray arrayWithObject:[[fileURL path] lastPathComponent]] : nil);
+    return (fileURL ? @[fileURL.path.lastPathComponent] : nil);
 }
 
 
@@ -89,7 +89,7 @@
 - (NSDragOperation)tableView:(NSTableView *)tv validateDrop:(id <NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op {
     // This method will be called repeatedly during a drag in, to validate it and to determine the operation type and drop location
     NSDragOperation result = NSDragOperationNone, mask = [info draggingSourceOperationMask];
-    NSArray *availableTypes = [[info draggingPasteboard] types], *readableTypes = [_document readablePasteboardTypes];
+    NSArray *availableTypes = [info draggingPasteboard].types, *readableTypes = [_document readablePasteboardTypes];
     NSEnumerator *enumerator = [readableTypes objectEnumerator];
     NSString *type;
 
@@ -99,7 +99,7 @@
             // In any case, we accept the drag only if the pasteboard contains one of our desired types
             if ([availableTypes containsObject:type]) {
                 // We always place the drop after the last existing row
-                [tv setDropRow:[tv numberOfRows] dropOperation:NSTableViewDropAbove];
+                [tv setDropRow:tv.numberOfRows dropOperation:NSTableViewDropAbove];
                 result = NSDragOperationCopy;
             }
         }
