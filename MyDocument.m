@@ -73,7 +73,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
             // register as service provider
             NSApp.servicesProvider = [self class];
             // register as service consumer
-            [NSApp registerServicesMenuSendTypes:[self writablePasteboardTypes] returnTypes:[self readablePasteboardTypes]];
+            [NSApp registerServicesMenuSendTypes:self.writablePasteboardTypes returnTypes:self.readablePasteboardTypes];
             registeredServices = YES;
         }
     }

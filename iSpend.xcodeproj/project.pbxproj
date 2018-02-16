@@ -110,8 +110,6 @@
 		2A37F4AAFDCFA73011CA2CEA /* iSpend */ = {
 			isa = PBXGroup;
 			children = (
-				E18B47292037931E00293513 /* Transaction.h */,
-				E18B472A2037931E00293513 /* Transaction.m */,
 				41FCF2E30A152CA9000AF317 /* README.rtf */,
 				2A37F4ABFDCFA73011CA2CEA /* Classes */,
 				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
@@ -125,6 +123,8 @@
 		2A37F4ABFDCFA73011CA2CEA /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E18B47292037931E00293513 /* Transaction.h */,
+				E18B472A2037931E00293513 /* Transaction.m */,
 				E12C9061203209CC00C46417 /* ExpandableViewController.h */,
 				E12C9062203209CC00C46417 /* ExpandableViewController.m */,
 				E12C905E203209CC00C46417 /* MyDocument_Pasteboard.h */,

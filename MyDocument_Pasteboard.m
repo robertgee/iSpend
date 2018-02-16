@@ -120,7 +120,7 @@
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types {
     BOOL result = NO;
     NSMutableArray *typesToDeclare = [NSMutableArray array];
-    NSArray *writableTypes = [self writablePasteboardTypes];
+    NSArray *writableTypes = self.writablePasteboardTypes;
     NSString *type;
     
     for (type in writableTypes) {
@@ -188,7 +188,7 @@
 }
 
 - (void)copy:(id)sender {
-    [self writeSelectionToPasteboard:[NSPasteboard generalPasteboard] types:[self writablePasteboardTypes]];
+    [self writeSelectionToPasteboard:[NSPasteboard generalPasteboard] types:self.writablePasteboardTypes];
 }
 
 
@@ -308,7 +308,7 @@
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard {
     // We go through the available types in our preferred order, and return after the first one that succeeds
     BOOL result = NO;
-    NSArray *availableTypes = pboard.types, *readableTypes = [self readablePasteboardTypes];
+    NSArray *availableTypes = pboard.types, *readableTypes = self.readablePasteboardTypes;
     NSEnumerator *enumerator = [readableTypes objectEnumerator];
     NSString *type;
     
@@ -357,7 +357,7 @@
 /* Method for enabling services use */
 
 - (id)validRequestorForSendType:(NSString *)sendType returnType:(NSString *)returnType {
-    if ((!sendType || [[self writablePasteboardTypes] containsObject:sendType]) && (!returnType || [[self readablePasteboardTypes] containsObject:returnType]) && (!sendType || [_transactionController selectedObjects].count > 0)) return self;
+    if ((!sendType || [self.writablePasteboardTypes containsObject:sendType]) && (!returnType || [self.readablePasteboardTypes containsObject:returnType]) && (!sendType || [_transactionController selectedObjects].count > 0)) return self;
     // We are not actually a subclass of NSResponder; if we were, we would pass this on to super.
     // In this particular application, we know that no responder above the document level handles copy/paste; if there were one, we would pass this on to it.
     return nil;
@@ -374,7 +374,7 @@
 
 + (void)exportData:(NSPasteboard *)pboard userData:(NSString *)data error:(NSString **)error {
     MyDocument *document = [NSApp makeWindowsPerform:@selector(windowController) inOrder:YES].windowController.document;
-    if (document) [document writeSelectionToPasteboard:pboard types:[document writablePasteboardTypes]];
+    if (document) [document writeSelectionToPasteboard:pboard types:document.writablePasteboardTypes];
 }
 
 @end
