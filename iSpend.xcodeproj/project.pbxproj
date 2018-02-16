@@ -20,7 +20,6 @@
 		D62A09750829A8C000B987AB /* add.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D62A09740829A8C000B987AB /* add.tiff */; };
 		D62A09770829A8CB00B987AB /* delete.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D62A09760829A8CB00B987AB /* delete.tiff */; };
 		D62A09790829A8D600B987AB /* save.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D62A09780829A8D600B987AB /* save.tiff */; };
-		E10D8D1C20314937005F1912 /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10D8D1320314937005F1912 /* Transaction.swift */; };
 		E12C9066203209CC00C46417 /* MyDocument_Pasteboard.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C9059203209CB00C46417 /* MyDocument_Pasteboard.m */; };
 		E12C9067203209CC00C46417 /* SearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C905A203209CB00C46417 /* SearchController.m */; };
 		E12C9068203209CC00C46417 /* TransactionsController_Sorting.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C905C203209CC00C46417 /* TransactionsController_Sorting.m */; };
@@ -29,6 +28,7 @@
 		E12C906B203209CC00C46417 /* TransactionsController_Dragging.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C9060203209CC00C46417 /* TransactionsController_Dragging.m */; };
 		E12C906C203209CC00C46417 /* ExpandableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C9062203209CC00C46417 /* ExpandableViewController.m */; };
 		E12C906D203209CC00C46417 /* MyDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = E12C9065203209CC00C46417 /* MyDocument.m */; };
+		E18B472B2037931E00293513 /* Transaction.m in Sources */ = {isa = PBXBuildFile; fileRef = E18B472A2037931E00293513 /* Transaction.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +51,6 @@
 		D62A09740829A8C000B987AB /* add.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = add.tiff; sourceTree = "<group>"; };
 		D62A09760829A8CB00B987AB /* delete.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = delete.tiff; sourceTree = "<group>"; };
 		D62A09780829A8D600B987AB /* save.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = save.tiff; sourceTree = "<group>"; };
-		E10D8D1320314937005F1912 /* Transaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transaction.swift; sourceTree = "<group>"; };
 		E129CDFE20311DAF005DFDFF /* iSpend-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "iSpend-Bridging-Header.h"; sourceTree = "<group>"; };
 		E12C9059203209CB00C46417 /* MyDocument_Pasteboard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDocument_Pasteboard.m; sourceTree = "<group>"; };
 		E12C905A203209CB00C46417 /* SearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchController.m; sourceTree = "<group>"; };
@@ -66,6 +65,8 @@
 		E12C9063203209CC00C46417 /* MyDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyDocument.h; sourceTree = "<group>"; };
 		E12C9064203209CC00C46417 /* SearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchController.h; sourceTree = "<group>"; };
 		E12C9065203209CC00C46417 /* MyDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyDocument.m; sourceTree = "<group>"; };
+		E18B47292037931E00293513 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
+		E18B472A2037931E00293513 /* Transaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Transaction.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +110,8 @@
 		2A37F4AAFDCFA73011CA2CEA /* iSpend */ = {
 			isa = PBXGroup;
 			children = (
+				E18B47292037931E00293513 /* Transaction.h */,
+				E18B472A2037931E00293513 /* Transaction.m */,
 				41FCF2E30A152CA9000AF317 /* README.rtf */,
 				2A37F4ABFDCFA73011CA2CEA /* Classes */,
 				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
@@ -135,7 +138,6 @@
 				E12C905C203209CC00C46417 /* TransactionsController_Sorting.m */,
 				E12C905B203209CC00C46417 /* TransactionsController.h */,
 				E12C905D203209CC00C46417 /* TransactionsController.m */,
-				E10D8D1320314937005F1912 /* Transaction.swift */,
 				E129CDFE20311DAF005DFDFF /* iSpend-Bridging-Header.h */,
 			);
 			name = Classes;
@@ -253,7 +255,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E10D8D1C20314937005F1912 /* Transaction.swift in Sources */,
 				E12C906B203209CC00C46417 /* TransactionsController_Dragging.m in Sources */,
 				E12C906C203209CC00C46417 /* ExpandableViewController.m in Sources */,
 				8D15AC320486D014006FF6A4 /* main.m in Sources */,
@@ -262,6 +263,7 @@
 				E12C9066203209CC00C46417 /* MyDocument_Pasteboard.m in Sources */,
 				E12C9068203209CC00C46417 /* TransactionsController_Sorting.m in Sources */,
 				E12C9067203209CC00C46417 /* SearchController.m in Sources */,
+				E18B472B2037931E00293513 /* Transaction.m in Sources */,
 				E12C906A203209CC00C46417 /* MyDocument_Toolbar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
