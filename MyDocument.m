@@ -125,7 +125,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     // we'll be notified whenever there is a change to transactions, whether the array is replaced or an object is added or removed, because of the observing we set up in -init
-    if (context == SpndTransactionsContext) {
+    if (context == (__bridge void * _Nullable)(SpndTransactionsContext)) {
         // set oldTransactions to the array of transactions that have been removed
         NSArray *oldTransactions = change[NSKeyValueChangeOldKey];
         if (oldTransactions.count > 0) {
@@ -144,19 +144,19 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         }
     }
     // observeValueForKeyPath... gets called with one of the below keyPaths ("amount", "type", or "accountType") when the value for that keyPath changes in a transaction, because of the observing we set up above
-    else if (context == SpndAmountContext) {
+    else if (context == (__bridge void * _Nullable)(SpndAmountContext)) {
         // the amount has changed in one of the transactions.  Cause balance to get updated
         [self willChangeValueForKey:@"balance"];
         [self didChangeValueForKey:@"balance"];
         
         
-    } else if (context == SpndTypeContext) {
+    } else if (context == (__bridge void * _Nullable)(SpndTypeContext)) {
         //  the type has changed in one of the transactions.  If this is a type we haven't seen before, add it to _categories
         NSString *category = [object valueForKeyPath:@"type"];
         if (category != nil && ![category isEqualToString:@""] && ![_categories containsObject:category]) {
             [[self mutableArrayValueForKey:@"categories"] addObject:category];
         }
-    } else if (context == SpndAccountTypeContext) {
+    } else if (context == (__bridge void * _Nullable)(SpndAccountTypeContext)) {
         // the account type has changed in one of the transactions.  If this is an accountType we haven't seen before, add it to _accountTypes
         NSString *accountType = [object valueForKeyPath:@"accountType"];
         if (accountType != nil && ![accountType isEqualToString:@""] && ![_accountTypes containsObject:accountType]) {
@@ -182,11 +182,11 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, newTransactions.count)];
     // start observing "amount" in transactions that have been added so we can know when any amount changes
     // define a context so we can recognize the notification
-    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"amount" options:0 context:SpndAmountContext];
+    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"amount" options:0 context:(__bridge void * _Nullable)(SpndAmountContext)];
     // start observing "type" so we can know when a new type is added
-    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"type" options:0 context:SpndTypeContext];
+    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"type" options:0 context:(__bridge void * _Nullable)(SpndTypeContext)];
     // start observing "accountType" so we can know when a new accountType is added
-    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"accountType" options:0 context:SpndAccountTypeContext];
+    [newTransactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:@"accountType" options:0 context:(__bridge void * _Nullable)(SpndAccountTypeContext)];
 }
 
 - (void)stopObservingTransactions:(NSArray *)oldTransactions {

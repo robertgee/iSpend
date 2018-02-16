@@ -57,14 +57,14 @@ static NSString *SortContext = @"TransactionsController.sort";
     [super bind:binding toObject:observable withKeyPath:keyPath options:options];
     // set this controller as an observer of the object and keyPath to which its contentArray is bound (should be MyDocument.transactions)
     if ([binding isEqualToString:@"contentArray"]) {
-        [observable addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:TransactionsContext];
+        [observable addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:(__bridge void * _Nullable)(TransactionsContext)];
         _observedKeyPath = keyPath;
     }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     // Note that we use pointer comparison for the context argument.  If this observation was set up by super, we can't be sure context will be an object, so we shouldn't use isEqual:. 
-    if (context == TransactionsContext) {
+    if (context == (__bridge void * _Nullable)(TransactionsContext)) {
         // observeValueForKeyPath:ofObject:change:context: is invoked with the context we specified above whenever an entry is added or removed from the transactions array
         NSKeyValueChange changeKind = [change[NSKeyValueChangeKindKey] integerValue];
         if (changeKind != NSKeyValueChangeRemoval) {
@@ -74,7 +74,7 @@ static NSString *SortContext = @"TransactionsController.sort";
         // in order to update sort order when a value is changed within a transaction, we also need to observe these key paths
         [self updateObservationForOldTransactions:change[NSKeyValueChangeOldKey] newTransactions:change[NSKeyValueChangeNewKey]];
     } 
-    else if (context == SortContext) {
+    else if (context == (__bridge void * _Nullable)(SortContext)) {
         // a key path for a sort descriptor has been changed in a transaction
         [self scheduleRearrangeObjects];
     } 
@@ -120,7 +120,7 @@ static NSString *SortContext = @"TransactionsController.sort";
     NSSortDescriptor *sortDescriptor;
     NSIndexSet *allIndexes = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, transactions.count)]; 
     for (sortDescriptor in sortDescriptors) {
-        [transactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:sortDescriptor.key options:0 context:SortContext];
+        [transactions addObserver:self toObjectsAtIndexes:allIndexes forKeyPath:sortDescriptor.key options:0 context:(__bridge void * _Nullable)(SortContext)];
     }
 }
 
