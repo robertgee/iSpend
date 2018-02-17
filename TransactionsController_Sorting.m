@@ -148,7 +148,6 @@ static NSString *SortContext = @"TransactionsController.sort";
     [self removeSortObserversForTransactions:self.arrangedObjects sortDescriptors:self.sortDescriptors];
     _document = nil;
     _observedKeyPath = nil;
-    [super dealloc];
 }
 
 @end

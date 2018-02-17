@@ -61,14 +61,14 @@
     double _costBasis;
     double _saleAmount;
     NSDate *_purchaseDate;
-    NSDocument *_document;
+    NSDocument *__weak _document;
     NSUndoManager *_undoManager;
 }
 
 - (instancetype)initWithString:(NSString *)string;
 
 @property double amount;
-@property(retain) NSDate *date;
+@property(strong) NSDate *date;
 @property(copy) NSString *descriptionString;
 @property(copy) NSString *type;
 @property(copy) NSString *accountType;
@@ -79,8 +79,8 @@
 @property double numberShares;
 @property double costBasis;
 @property double saleAmount;
-@property(retain) NSDate *purchaseDate;
-@property(assign) NSDocument *document;
-@property(readonly) NSUndoManager *undoManager;
+@property(strong) NSDate *purchaseDate;
+@property(weak) NSDocument *document;
+@property(weak, readonly) NSUndoManager *undoManager;
 
 @end

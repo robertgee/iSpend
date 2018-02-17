@@ -61,7 +61,6 @@
     if (_expanded) {
         [_transactionController removeObserver:self forKeyPath:@"selection.stockTransaction"];
     }
-    [super dealloc];
 }
 
 - (BOOL)showingStockTransaction {
@@ -188,7 +187,6 @@
     // since we may have adjusted the origin during animation, restore the correct origins.  This is important for the view that has been hidden
     [_stockTransactionView setFrameOrigin:NSZeroPoint];
     [_bankTransactionView  setFrameOrigin:NSZeroPoint];
-    [_animation release];
     _animation = nil;
     
     // restore the resizing masks on the scrollView and middleBoxView.  

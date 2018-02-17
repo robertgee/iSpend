@@ -67,18 +67,13 @@
     if (self = [super init]) {
         _query = [[NSMetadataQuery alloc] init];
         // We want the items in the query to automatically be sorted by the file system name; this way, we don't have to do any special sorting. 
-        NSSortDescriptor *sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:(id)kMDItemFSName ascending:YES] autorelease];
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:(id)kMDItemFSName ascending:YES];
         NSArray *descriptors = @[sortDescriptor];
         _query.sortDescriptors = descriptors;
     }
     return self;
 }
 
-- (void)dealloc {
-    [_query release];
-    [_searchKey release];
-    [super dealloc];
-}
 
 - (IBAction)setSearchAllDocuments:(id)sender {
     _allDocumentsMenuItem.state = 1;
@@ -101,12 +96,11 @@
 
 // In the nib file, the NSSearchField's value is bound to "searchKey"
 - (NSString *)searchKey {
-    return [[_searchKey copy] autorelease];
+    return [_searchKey copy];
 }
 
 - (void)setSearchKey:(NSString *) value {
     if (_searchKey != value) {
-        [_searchKey release];
         if (value == nil) value = @"";
         _searchKey = [value copy];
         [self createSearchPredicate];

@@ -90,7 +90,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         // [self setAccountTypes:@[@"Checking", @"Savings", @"Credit Card", @"Brokerage", @"Mutual Fund", @"Money Market"]];
         
         // we need to know when any transaction is added or removed so we can observe any changes to any amounts, again to keep the  balance up to date
-        [self addObserver:self forKeyPath:@"transactions" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:SpndTransactionsContext];
+        [self addObserver:self forKeyPath:@"transactions" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:(__bridge void * _Nullable)(SpndTransactionsContext)];
         if (!registeredServices) {
             // register as service provider
             NSApp.servicesProvider = [self class];
@@ -104,19 +104,13 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 
 - (void)dealloc {
     [self stopObservingTransactions:_transactions];
-    [_transactions release];
     _transactions = nil;
-    [_categories release];
     _categories = nil;
-    [_accountTypes release];
     _accountTypes = nil;
-    [searchFieldOutlet release];
-    [super dealloc];
 }
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController {
     // the searchField needs to be explicitly retained because it may be moved in and out of view hierarchies during toolbar customization.
-    [searchFieldOutlet retain];
     // Set up the toolbar after the document nib has been loaded 
     [self setupToolbarForWindow:windowController.window];
 }
@@ -228,14 +222,13 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     if (!_transactions) {
         _transactions = [[NSMutableArray alloc] init];
     }
-    return [[_transactions retain] autorelease];
+    return _transactions;
 }
 
 - (void)setTransactions:(NSMutableArray *)transactions
 {
     if (_transactions != transactions)
     {
-        [_transactions release];
         _transactions = [transactions mutableCopy];
     }
 }
@@ -245,7 +238,6 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 {
     if (_categories != categories)
     {
-        [_categories release];
         _categories = [categories mutableCopy];
     }
 }
@@ -255,7 +247,6 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 {
     if (_accountTypes != accountTypes)
     {
-        [_accountTypes release];
         _accountTypes = [accountTypes mutableCopy];
     }
 }
@@ -303,7 +294,6 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
                 // In this simple example we know that no one's going to be paying attention to the domain and code that we use here.
                 *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:errorUserInfo];
             }
-            [errorString release];
 
         }
         return data;
@@ -337,7 +327,6 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 
             *outError = [NSError errorWithDomain:@"iSpendErrorDomain" code:-1 userInfo:errorUserInfo];
         }
-        [errorString release];
         result = NO;
     }
     // we don't want any of the operations involved in loading the new document to mark it as dirty, nor should they be undo-able, so clear the undo stack

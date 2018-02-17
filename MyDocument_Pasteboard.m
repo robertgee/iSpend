@@ -55,7 +55,7 @@
 - (NSString *)stringFromTransactions:(NSArray *)transactions {
     // When we are writing out NSStringPboardType, we create a string with one line per transaction and tabs between items in the transaction
     NSMutableString *result = [NSMutableString string];
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
     for (Transaction *transaction in transactions) {
@@ -80,18 +80,16 @@
     style.alignment = alignment;
     [text replaceCharactersInRange:NSMakeRange(textLength, 0) withString:[NSString stringWithFormat:@"%@\n", (contents ? contents : @"")]];
     [text addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(textLength, text.length - textLength)];
-    [style release];
-    [block release];
 }
 
 - (NSAttributedString *)attributedStringFromTransactions:(NSArray *)transactions {
     // When we are writing out NSRTFPboardType, we create a table with one row per transaction and one cell per item in the transaction
-    NSMutableAttributedString *result = [[[NSMutableAttributedString alloc] initWithString:@"\n"] autorelease];
-    NSAttributedString *returnString = [[[NSAttributedString alloc] initWithString:@"\n"] autorelease];
+    NSMutableAttributedString *result = [[NSMutableAttributedString alloc] initWithString:@"\n"];
+    NSAttributedString *returnString = [[NSAttributedString alloc] initWithString:@"\n"];
     NSUInteger i, count = transactions.count;
     Transaction *transaction;
-    NSTextTable *table = [[[NSTextTable alloc] init] autorelease];
-    NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    NSTextTable *table = [[NSTextTable alloc] init];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
     table.numberOfColumns = 5;
@@ -209,7 +207,6 @@
         transaction = [[Transaction alloc] initWithString:[string substringWithRange:lineRange]];
         if (transaction) {
             [_transactionController addObject:transaction];
-            [transaction release];
             result = YES;
         }
         location = NSMaxRange(lineRange);
@@ -251,7 +248,6 @@
                     transaction = [[Transaction alloc] initWithString:[string substringWithRange:NSMakeRange(rowLocation, NSMaxRange(blockRange) - rowLocation)]];
                     if (transaction) {
                         [_transactionController addObject:transaction];
-                        [transaction release];
                         result = YES;
                     }
                     rowLocation = NSMaxRange(blockRange);
@@ -263,7 +259,6 @@
             transaction = [[Transaction alloc] initWithString:[string substringWithRange:lineRange]];
             if (transaction) {
                 [_transactionController addObject:transaction];
-                [transaction release];
                 result = YES;
             }
             location = NSMaxRange(lineRange);
@@ -341,16 +336,16 @@
                 // NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithPath:filePath documentAttributes:nil] autorelease];
                 
                 NSURL *fileURL = [NSURL fileURLWithPath:filePath];
-                NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithURL:fileURL
+                NSAttributedString *attrStr = [[NSAttributedString alloc] initWithURL:fileURL
                                                                                options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType}
                                                                     documentAttributes:nil
-                                                                                 error:nil] autorelease];
+                                                                                 error:nil];
                 if (attrStr && attrStr.length > 0 && [self addTransactionsFromAttributedString:attrStr]) result = YES;
             }
         }
     } else if ([type isEqualToString:NSRTFPboardType]) {
         NSData *data = [pboard dataForType:NSRTFPboardType];
-        NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithRTF:data documentAttributes:NULL] autorelease];
+        NSAttributedString *attrStr = [[NSAttributedString alloc] initWithRTF:data documentAttributes:NULL];
         if (attrStr && attrStr.length > 0) result = [self addTransactionsFromAttributedString:attrStr];
     } else if ([type isEqualToString:NSStringPboardType]) {
         NSString *string = [pboard stringForType:NSStringPboardType];

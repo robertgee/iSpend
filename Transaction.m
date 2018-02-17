@@ -79,7 +79,6 @@
             NSDate *readDate;
         NSError *error;
         [dateFormatter getObjectValue:&readDate forString:substring range:&range error:&error];
-        [dateFormatter release];
         self.date = readDate;
         foundDate = YES;
     } else if (!foundAmount && scanner.atEnd) {
@@ -99,7 +98,6 @@
         }
     }
     if (!foundDate || !foundAmount) {
-        [self release];
         self = nil;
     }
     return self;
@@ -109,13 +107,7 @@
     // First, set the "document" property to nil.  Since this is how the undo manager is referenced, setting it to nil will prevent the following from causing spurious undo registrations.  Note that in -dealloc we are manipulating the underying instance variables directly, because invoking setters can cause side-effects, and getters can return copies.
     _document = nil;
     
-    [_date release];
-    [_purchaseDate release];
-    [_type release];
-    [_descriptionString release];
-    [_accountType release];
     
-    [super dealloc];
 }
 
 - (NSString *)description {
@@ -206,61 +198,56 @@
 - (void)setDate:(NSDate *)value {
     if (_date != value) {
         [self.undoManager registerUndoWithTarget:self selector:@selector(setDate:) object:_date];
-        [_date release];
-        _date = [value retain];
+        _date = value;
     }
 }
 
 - (NSDate *)date { 
-    return [[_date retain] autorelease]; 
+    return _date; 
 }
 
 - (void)setPurchaseDate:(NSDate *)value {
     if (_purchaseDate != value) {
         [self.undoManager registerUndoWithTarget:self selector:@selector(setPurchaseDate:) object:_purchaseDate];
-        [_purchaseDate release];
-        _purchaseDate = [value retain];
+        _purchaseDate = value;
     }
 }
 
 - (NSDate *)purchaseDate { 
-    return [[_purchaseDate retain] autorelease]; 
+    return _purchaseDate; 
 }
 
 - (void)setDescriptionString:(NSString *)value {
     if (_descriptionString != value) {
         [self.undoManager registerUndoWithTarget:self selector:@selector(setDescriptionString:) object:_descriptionString];
-        [_descriptionString release];
         _descriptionString = [value copy];
     }
 }
 
 - (NSString *)descriptionString { 
-    return [[_descriptionString retain] autorelease]; 
+    return _descriptionString; 
 }
 
 - (void)setType:(NSString *)value {
     if (_type != value) {
         [self.undoManager registerUndoWithTarget:self selector:@selector(setType:) object:_type];
-        [_type release];
         _type = [value copy];
     }
 }
 
 - (NSString *)type { 
-    return [[_type retain] autorelease]; 
+    return _type; 
 }
 
 - (void)setAccountType:(NSString *)value {
     if (_accountType != value) {
         [self.undoManager registerUndoWithTarget:self selector:@selector(setAccountType:) object:_accountType];
-        [_accountType release];
         _accountType = [value copy];
     }
 }
 
 - (NSString *)accountType { 
-    return [[_accountType retain] autorelease]; 
+    return _accountType; 
 }
 
 - (void)setTaxable:(BOOL)flag {

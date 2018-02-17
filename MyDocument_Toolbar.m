@@ -60,7 +60,7 @@ static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
 // ============================================================
 - (void)setupToolbarForWindow:(NSWindow *)theWindow {
     // Create a new toolbar instance, and attach it to our document window 
-    NSToolbar *toolbar = [[[NSToolbar alloc] initWithIdentifier: iSpendDocToolbarIdentifier] autorelease];
+    NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier: iSpendDocToolbarIdentifier];
 
     // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults 
     [toolbar setAllowsUserCustomization: YES];
@@ -77,7 +77,7 @@ static NSString *SearchToolbarItemIdentifier = @"Search Item Identifier";
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL)willBeInserted {
     // Required delegate method:  Given an item identifier, this method returns an item 
     // The toolbar will use this method to obtain toolbar items that can be displayed in the customization sheet, or in the toolbar itself 
-    NSToolbarItem *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
+    NSToolbarItem *toolbarItem = [[NSToolbarItem alloc] initWithItemIdentifier: itemIdent];
 
     if ([itemIdent isEqual:AddItemToolbarItemIdentifier]) {
         // Set the text label to be displayed in the toolbar and customization palette 
