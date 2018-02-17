@@ -100,11 +100,11 @@
     [table setHidesEmptyCells:NO];
     for (i = 0; i < count; i++) {
         transaction = transactions[i];
-        [self addCell:[dateFormatter stringFromDate:transaction.date] table:table row:i column:0 alignment:NSLeftTextAlignment toText:result];
-        [self addCell:[NSString stringWithFormat:@"%.2f", transaction.amount] table:table row:i column:1 alignment:NSRightTextAlignment toText:result];
-        [self addCell:transaction.descriptionString table:table row:i column:2 alignment:NSLeftTextAlignment toText:result];
-        [self addCell:transaction.type table:table row:i column:3 alignment:NSLeftTextAlignment toText:result];
-        [self addCell:transaction.accountType table:table row:i column:4 alignment:NSLeftTextAlignment toText:result];
+        [self addCell:[dateFormatter stringFromDate:transaction.date] table:table row:i column:0 alignment:NSTextAlignmentLeft toText:result];
+        [self addCell:[NSString stringWithFormat:@"%.2f", transaction.amount] table:table row:i column:1 alignment:NSTextAlignmentRight toText:result];
+        [self addCell:transaction.descriptionString table:table row:i column:2 alignment:NSTextAlignmentLeft toText:result];
+        [self addCell:transaction.type table:table row:i column:3 alignment:NSTextAlignmentLeft toText:result];
+        [self addCell:transaction.accountType table:table row:i column:4 alignment:NSTextAlignmentLeft toText:result];
     }
     [result appendAttributedString:returnString];
     return result;
@@ -149,7 +149,7 @@
             result = YES;
         } else if ([type isEqualToString:NSRTFPboardType]) {
             NSAttributedString *attrStr = [self attributedStringFromTransactions:transactions];
-            if (attrStr && attrStr.length > 0) result = [pboard setData:[attrStr RTFFromRange:NSMakeRange(0, attrStr.length) documentAttributes:nil] forType:NSRTFPboardType];
+            if (attrStr && attrStr.length > 0) result = [pboard setData:[attrStr RTFFromRange:NSMakeRange(0, attrStr.length) documentAttributes:@{}] forType:NSRTFPboardType];
         } else if ([type isEqualToString:NSStringPboardType]) {
             NSString *string = [self stringFromTransactions:transactions];
             if (string && string.length > 0) result = [pboard setString:string forType:NSStringPboardType];
@@ -171,7 +171,10 @@
     BOOL succeeded = NO;
     
     if (newDocument) {
-        [newDocument setTransactions:[NSArray arrayWithArray:transactions]];
+        
+        NSMutableArray* txns = [transactions mutableCopy];
+        
+        [newDocument setTransactions:[NSMutableArray arrayWithArray:txns]];
         if ([newDocument writeToURL:fileURL ofType:kSpendDocumentType error:&error]) succeeded = YES;
         [controller removeDocument:newDocument];
     }

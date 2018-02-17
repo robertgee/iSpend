@@ -65,8 +65,30 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     self = [super init];
     if (self) {
         // initialize categories and accountTypes with some predefined strings
-        [self setCategories:@[@"Meals", @"Utilities", @"Mortgage", @"Gas", @"Insurance"]];
-        [self setAccountTypes:@[@"Checking", @"Savings", @"Credit Card", @"Brokerage", @"Mutual Fund", @"Money Market"]];
+        
+        NSMutableArray *arrayCategories = [NSMutableArray array];
+        [arrayCategories addObject:@"Meals"];
+        [arrayCategories addObject:@"Utilities"];
+        [arrayCategories addObject:@"Mortgage"];
+        [arrayCategories addObject:@"Gas"];
+        [arrayCategories addObject:@"Insurance"];
+        
+        [self setCategories:(NSMutableArray *)arrayCategories];
+
+        
+        NSMutableArray *arrayAccountTypes = [NSMutableArray array];
+        [arrayAccountTypes addObject:@"Checking"];
+        [arrayAccountTypes addObject:@"Savings"];
+        [arrayAccountTypes addObject:@"Credit Card"];
+        [arrayAccountTypes addObject:@"Brokerage"];
+        [arrayAccountTypes addObject:@"Mutual Fund"];
+        [arrayAccountTypes addObject:@"Money Market"];
+        
+        [self setAccountTypes:(NSMutableArray *)arrayAccountTypes];
+
+        // [self setCategories:@[@"Meals", @"Utilities", @"Mortgage", @"Gas", @"Insurance"]];
+        // [self setAccountTypes:@[@"Checking", @"Savings", @"Credit Card", @"Brokerage", @"Mutual Fund", @"Money Market"]];
+        
         // we need to know when any transaction is added or removed so we can observe any changes to any amounts, again to keep the  balance up to date
         [self addObserver:self forKeyPath:@"transactions" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:SpndTransactionsContext];
         if (!registeredServices) {

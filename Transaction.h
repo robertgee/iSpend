@@ -65,7 +65,7 @@
     NSUndoManager *_undoManager;
 }
 
-- (instancetype)initWithString:(NSString *)string NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithString:(NSString *)string;
 
 @property double amount;
 @property(retain) NSDate *date;
