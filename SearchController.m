@@ -157,11 +157,14 @@
 
 - (void)orderFrontSearchPanel:(id)sender {
     if (!_searchPanel) {
-        if (![NSBundle loadNibNamed:@"SearchPanel" owner:self])  {
+        
+        if (![[NSBundle mainBundle] loadNibNamed:@"SearchPanel"
+                                           owner:self
+                                 topLevelObjects:nil]) {
             NSLog(@"Failed to load SearchPanel.nib");
             NSBeep();
             return;
-        }
+        }        
     }
 
     [_searchPanel makeKeyAndOrderFront:sender];

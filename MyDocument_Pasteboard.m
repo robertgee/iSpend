@@ -325,6 +325,7 @@
 
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type {
     BOOL result = NO;
+    
     if ([type isEqualToString:kSpendDocumentType]) {
         NSData *data = [pboard dataForType:kSpendDocumentType];
         if (data && data.length > 0) result = [self addTransactionsFromPasteboardData:data];
@@ -337,7 +338,13 @@
                 if (data && data.length > 0 && [self addTransactionsFromFileData:data]) result = YES;
             } else {
                 // Treat the file as a text file
-                NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithPath:filePath documentAttributes:nil] autorelease];
+                // NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithPath:filePath documentAttributes:nil] autorelease];
+                
+                NSURL *fileURL = [NSURL fileURLWithPath:filePath];
+                NSAttributedString *attrStr = [[[NSAttributedString alloc] initWithURL:fileURL
+                                                                               options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType}
+                                                                    documentAttributes:nil
+                                                                                 error:nil] autorelease];
                 if (attrStr && attrStr.length > 0 && [self addTransactionsFromAttributedString:attrStr]) result = YES;
             }
         }

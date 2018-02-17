@@ -292,7 +292,8 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
         doc[kTransactions] = [NSKeyedArchiver archivedDataWithRootObject:_transactions];
         doc[kCategories] = [NSKeyedArchiver archivedDataWithRootObject:_categories];
         doc[kAccountTypes] = [NSKeyedArchiver archivedDataWithRootObject:_accountTypes];
-        data = [NSPropertyListSerialization dataFromPropertyList:doc format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
+        //data = [NSPropertyListSerialization dataFromPropertyList:doc format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
+        data = [NSPropertyListSerialization dataWithPropertyList:doc format:NSPropertyListXMLFormat_v1_0 options:0 error:outError];
         if (!data) {
             if (!outError) {
                 NSLog(@"dataFromPropertyList failed with %@", errorString);
@@ -319,9 +320,10 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
     assert([typeName isEqualToString:kSpendDocumentType]); 
     
     NSString *errorString;
-    NSDictionary *documentDictionary = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListImmutable format:NULL errorDescription:&errorString];
+    // NSDictionary *documentDictionary = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListImmutable format:NULL errorDescription:&errorString];
+    NSDictionary *documentDictionary = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:NULL error:outError];
 
-    if (documentDictionary) {                                           
+    if (documentDictionary) {
         [self setOpeningBalance:[documentDictionary[kOpeningBalance] doubleValue]];
         [self setTransactions:[NSKeyedUnarchiver unarchiveObjectWithData:documentDictionary[kTransactions]]];
         [self setCategories:[NSKeyedUnarchiver unarchiveObjectWithData:documentDictionary[kCategories]]];
