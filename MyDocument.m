@@ -43,7 +43,7 @@
  
  Copyright (C) 2012 Apple Inc. All Rights Reserved.
  
- */ 
+ */
 
 
 #import "MyDocument.h"
@@ -111,7 +111,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 
 - (void)windowControllerDidLoadNib:(NSWindowController *)windowController {
     // the searchField needs to be explicitly retained because it may be moved in and out of view hierarchies during toolbar customization.
-    // Set up the toolbar after the document nib has been loaded 
+    // Set up the toolbar after the document nib has been loaded
     [self setupToolbarForWindow:windowController.window];
 }
 
@@ -255,11 +255,11 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 /* Note: In a more complicated application there could be more than one window per document.  In that case, these action methods would go in the custom window controller.  Then, this NSDocument subclass would not even need a connection to the array controller.
 */
 - (void)add:(id)sender {
-    [_transactionController add:sender];    
+    [_transactionController add:sender];
 }
 
 - (void)delete:(id)sender {
-    [_transactionController remove:sender];    
+    [_transactionController remove:sender];
 }
 
 // saving and opening documents
@@ -307,7 +307,7 @@ static NSString *SpndAccountTypeContext = @"com.apple.iSpend.accountType";
 {
     BOOL result = NO;
     // we only recognize one data type.  It is a programming error to call this method with any other typeName
-    assert([typeName isEqualToString:kSpendDocumentType]); 
+    assert([typeName isEqualToString:kSpendDocumentType]);
     
     NSString *errorString;
     // NSDictionary *documentDictionary = [NSPropertyListSerialization propertyListFromData:data mutabilityOption:NSPropertyListImmutable format:NULL errorDescription:&errorString];
